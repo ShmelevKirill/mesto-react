@@ -1,37 +1,16 @@
 import React from "react";
-import { api } from "../utils/api";
 import Card from "./Card";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick }) {
-  const [userName, setUserName] = React.useState("");
-  const [userDescription, setUserDescription] = React.useState("");
-  const [userAvatar, setUserAvatar] = React.useState("");
-  const [cards, setCards] = React.useState([]);
-
-React.useEffect(() => {
-  api
-    .getUserInfo()
-    .then((res) => {
-      setUserAvatar(res.avatar);
-      setUserName(res.name);
-      setUserDescription(res.about);
-      })
-    .catch((err) => console.log(err));
-
-  api
-    .getInitialCards()
-    .then((res) => {
-      setCards(res);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+function Main({ cards, onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete, }) {
+  const currentUser = React.useContext(CurrentUserContext);
 
   return (
     <main className="content">
       <section className="profile">
         <div className="profile__photo">
             <img
-              src={userAvatar}
+              src={currentUser.avatar}
               alt="Аватар"
               className="profile__avatar"
             />
@@ -44,14 +23,14 @@ React.useEffect(() => {
         </div>
 
         <div className="profile__info">
-            <h1 className="profile__name">{userName}</h1>
+            <h1 className="profile__name">{currentUser.name}</h1>
               <button
                 onClick={onEditProfile}
                 className="profile__edit button"
                 type="button"
                 aria-label="Редактировать профиль"
               ></button>
-            <h2 className="profile__status">{userDescription}</h2>
+            <h2 className="profile__status">{currentUser.about}</h2>
         </div>
         
         <button
@@ -65,7 +44,7 @@ React.useEffect(() => {
       <section className="elements" aria-label="Карточки">
         <ul className="elements__list">
           {cards.map((card) => (
-            <Card key={card._id} card={card} onCardClick={onCardClick} />
+            <Card key={card._id} card={card} onCardClick={onCardClick} onCardLike={onCardLike} onCardDelete={onCardDelete} />
           ))}
         </ul>
       </section>
